@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fundamentos de Comunicación y Redes</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a1628 0%, #1a2847 100%);
+            overflow: hidden;
+        }
+
+        .presentation-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .slide {
+            width: 90%;
+            max-width: 1200px;
+            height: 85vh;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 50px;
+            display: none;
+            flex-direction: column;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            position: relative;
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            display: flex;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Portada */
+        .slide-cover {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #7e22ce 100%);
+        }
+
+        .slide-cover h1 {
+            font-size: 2.8em;
+            color: #fff;
+            margin-bottom: 20px;
+            text-shadow: 0 0 30px rgba(126, 34, 206, 0.8);
+            letter-spacing: 1px;
+            line-height: 1.3;
+        }
+
+        .slide-cover h2 {
+            font-size: 1.5em;
+            color: #60a5fa;
+            margin-bottom: 30px;
+            font-weight: 300;
+        }
+
+        .team-info {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 25px;
+            border-radius: 15px;
+            margin-top: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .team-info h3 {
+            color: #60a5fa;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .team-members {
+            color: #e0e7ff;
+            line-height: 1.8;
+            font-size: 1em;
+        }
+
+        .date {
+            color: #fbbf24;
+            font-size: 1.1em;
+            margin-top: 20px;
+            font-weight: 500;
+        }
+
+        /* Contenido general */
+        h2 {
+            color: #60a5fa;
+            font-size: 2.2em;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #7e22ce;
+            padding-bottom: 15px;
+        }
+
+        h3 {
+            color: #818cf8;
+            font-size: 1.6em;
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+
+        p, li {
+            color: #e0e7ff;
+            font-size: 1.1em;
+            line-height: 1.8;
+            margin-bottom: 12px;
+        }
+
+        ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        li {
+            padding-left: 30px;
+            position: relative;
+        }
+
+        li::before {
+            content: "▹";
+            position: absolute;
+            left: 0;
+            color: #7e22ce;
+            font-size: 1.5em;
+        }
+
+        .highlight-box {
+            background: rgba(96, 165, 250, 0.1);
+            border-left: 4px solid #60a5fa;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: #7e22ce;
+        }
+
+        .card h4 {
+            color: #fbbf24;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        /* Navegación */
+        .navigation {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            gap: 15px;
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            background: linear-gradient(135deg, #7e22ce, #2a5298);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(126, 34, 206, 0.4);
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(126, 34, 206, 0.6);
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            color: #60a5fa;
+            font-size: 1.2em;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 20px;
+            border-radius: 50px;
+            border: 1px solid rgba(96, 165, 250, 0.3);
+        }
+
+        .tech-pattern {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.03;
+            pointer-events: none;
+            background-image: 
+                repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(96, 165, 250, 0.5) 2px, rgba(96, 165, 250, 0.5) 4px),
+                repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(96, 165, 250, 0.5) 2px, rgba(96, 165, 250, 0.5) 4px);
+        }
+
+        strong {
+            color: #fbbf24;
+        }
+
+        .reference {
+            font-size: 0.95em;
+            color: #cbd5e1;
+            margin-left: 20px;
+        }
+
+        /* Diagramas SVG */
+        .diagram-container {
+            margin: 20px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .osi-layer {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .layer-box {
+            background: linear-gradient(135deg, rgba(96, 165, 250, 0.2), rgba(126, 34, 206, 0.2));
+            border: 2px solid;
+            padding: 15px 40px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.95em;
+            transition: transform 0.3s ease;
+        }
+
+        .layer-box:hover {
+            transform: scale(1.05);
+            z-index: 10;
+        }
+
+        .layer-7 { border-color: #ef4444; color: #fca5a5; }
+        .layer-6 { border-color: #f97316; color: #fdba74; }
+        .layer-5 { border-color: #eab308; color: #fde047; }
+        .layer-4 { border-color: #84cc16; color: #bef264; }
+        .layer-3 { border-color: #06b6d4; color: #67e8f9; }
+        .layer-2 { border-color: #3b82f6; color: #93c5fd; }
+        .layer-1 { border-color: #8b5cf6; color: #c4b5fd; }
+
+        .device-diagram {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .device-icon {
+            text-align: center;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            border: 2px solid rgba(96, 165, 250, 0.3);
+            min-width: 150px;
+            transition: all 0.3s ease;
+        }
+
+        .device-icon:hover {
+            border-color: #7e22ce;
+            transform: translateY(-5px);
+        }
+
+        .device-icon-text {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        .device-name {
+            color: #60a5fa;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .device-layer {
+            color: #fbbf24;
+            font-size: 0.9em;
+        }
+
+        .protocol-flow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+
+        .protocol-box {
+            background: rgba(96, 165, 250, 0.15);
+            border: 2px solid #60a5fa;
+            padding: 15px 25px;
+            border-radius: 10px;
+            color: #e0e7ff;
+            font-weight: 600;
+        }
+
+        .arrow {
+            color: #7e22ce;
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        .error-detection-diagram {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .method-box {
+            background: rgba(126, 34, 206, 0.1);
+            border: 2px solid #7e22ce;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .method-icon {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .method-name {
+            color: #fbbf24;
+            font-weight: 600;
+            font-size: 1.1em;
+            margin-bottom: 5px;
+        }
+
+        .method-power {
+            color: #60a5fa;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="tech-pattern"></div>
+    <div class="slide-counter" id="slideCounter">1 / 10</div>
+
+    <div class="presentation-container">
+        <!-- Slide 1: Portada -->
+        <div class="slide slide-cover active" data-slide="1">
+            <h1>📡 Fundamentos de Comunicación y Redes</h1>
+            <h2>Fundamentos de Telecomunicaciones | Grupo A</h2>
+            
+            <div class="team-info">
+                <h3>Integrantes del Equipo</h3>
+                <div class="team-members">
+                    👤 Fernando Vidal Delgado - 23200905<br>
+                    👤 Andy Gael Martinez Martinez - 23200863<br>
+                    👤 Alan Alessandro Gonzales Arroyo - 23201260<br>
+                    👤 Jose Luis Gomez Cruz - 23200841<br>
+                    👤 Elliot Gerardo Sanchez Aburto - 23200895
+                </div>
+                <div class="date">📅 Fecha de Entrega: 04/12/2025</div>
+            </div>
+        </div>
+
+        <!-- Slide 2: Modelo OSI - Capas Físicas -->
+        <div class="slide" data-slide="2">
+            <h2>5.1 Modelo OSI - Capas Inferiores</h2>
+            
+            <div class="diagram-container">
+                <div class="osi-layer">
+                    <div class="layer-box layer-7">7. Aplicación</div>
+                    <div class="layer-box layer-6">6. Presentación</div>
+                    <div class="layer-box layer-5">5. Sesión</div>
+                    <div class="layer-box layer-4">4. Transporte</div>
+                    <div class="layer-box layer-3">3. Red</div>
+                    <div class="layer-box layer-2">2. Enlace de Datos</div>
+                    <div class="layer-box layer-1">1. Física</div>
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <div class="card">
+                    <h4>🔷 Capa 1 - Física</h4>
+                    <p><strong>Función:</strong> Transmisión de bits a través del medio físico</p>
+                    <p><strong>Ejemplos:</strong> Cables Ethernet, fibra óptica, señales de radio</p>
+                    <p><strong>Relevancia:</strong> Base de toda comunicación digital</p>
+                </div>
+
+                <div class="card">
+                    <h4>🔷 Capa 2 - Enlace de Datos</h4>
+                    <p><strong>Función:</strong> Control de acceso al medio y detección de errores</p>
+                    <p><strong>Protocolos:</strong> Ethernet, Wi-Fi (802.11), PPP</p>
+                    <p><strong>Relevancia:</strong> Garantiza comunicación confiable entre nodos adyacentes</p>
+                </div>
+
+                <div class="card">
+                    <h4>🔷 Capa 3 - Red</h4>
+                    <p><strong>Función:</strong> Enrutamiento de paquetes entre redes</p>
+                    <p><strong>Protocolos:</strong> IP (IPv4/IPv6), ICMP, ARP</p>
+                    <p><strong>Relevancia:</strong> Permite la interconexión global de redes</p>
+                </div>
+
+                <div class="card">
+                    <h4>🔷 Capa 4 - Transporte</h4>
+                    <p><strong>Función:</strong> Comunicación extremo a extremo confiable</p>
+                    <p><strong>Protocolos:</strong> TCP (confiable), UDP (rápido)</p>
+                    <p><strong>Relevancia:</strong> Gestiona la calidad de la comunicación</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Modelo OSI - Capas Superiores -->
+        <div class="slide" data-slide="3">
+            <h2>5.1 Modelo OSI - Capas Superiores</h2>
+            
+            <div class="grid-2">
+                <div class="card">
+                    <h4>🔶 Capa 5 - Sesión</h4>
+                    <p><strong>Función:</strong> Establece, mantiene y finaliza sesiones entre aplicaciones</p>
+                    <p><strong>Ejemplos:</strong> NetBIOS, RPC, SQL</p>
+                    <p><strong>Relevancia:</strong> Sincronización y control de diálogo</p>
+                </div>
+
+                <div class="card">
+                    <h4>🔶 Capa 6 - Presentación</h4>
+                    <p><strong>Función:</strong> Traducción, cifrado y compresión de datos</p>
+                    <p><strong>Ejemplos:</strong> SSL/TLS, JPEG, MPEG, ASCII</p>
+                    <p><strong>Relevancia:</strong> Formato común entre sistemas diferentes</p>
+                </div>
+
+                <div class="card">
+                    <h4>🔶 Capa 7 - Aplicación</h4>
+                    <p><strong>Función:</strong> Interfaz directa con aplicaciones de usuario</p>
+                    <p><strong>Protocolos:</strong> HTTP, FTP, SMTP, DNS, SSH</p>
+                    <p><strong>Relevancia:</strong> Servicios de red para el usuario final</p>
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <strong>Importancia del Modelo OSI:</strong> Proporciona un marco de referencia estándar para comprender y diseñar redes, facilitando la interoperabilidad entre diferentes fabricantes y tecnologías.
+            </div>
+        </div>
+
+        <!-- Slide 4: Protocolos y Estándares Parte 1 -->
+        <div class="slide" data-slide="4">
+            <h2>5.2 Protocolos y Estándares - IEEE</h2>
+            
+            <div class="protocol-flow">
+                <div class="protocol-box">IEEE 802.3<br>Ethernet</div>
+                <span class="arrow">→</span>
+                <div class="protocol-box">IEEE 802.11<br>Wi-Fi</div>
+                <span class="arrow">→</span>
+                <div class="protocol-box">IEEE 802.15<br>Bluetooth</div>
+            </div>
+
+            <div class="card">
+                <h4>📡 IEEE 802.3 - Ethernet</h4>
+                <p><strong>Definición:</strong> Estándar para redes de área local cableadas</p>
+                <p><strong>Aplicación:</strong> Redes LAN empresariales y domésticas</p>
+                <ul>
+                    <li>10Base-T: 10 Mbps sobre par trenzado</li>
+                    <li>100Base-TX: Fast Ethernet (100 Mbps)</li>
+                    <li>1000Base-T: Gigabit Ethernet (1 Gbps)</li>
+                    <li>10GBase-T: 10 Gigabit Ethernet</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h4>📶 IEEE 802.11 - Wi-Fi</h4>
+                <p><strong>Definición:</strong> Estándar para redes inalámbricas de área local</p>
+                <p><strong>Aplicación:</strong> Conectividad móvil y acceso inalámbrico</p>
+                <ul>
+                    <li>802.11n (Wi-Fi 4): hasta 600 Mbps, 2.4/5 GHz</li>
+                    <li>802.11ac (Wi-Fi 5): hasta 3.5 Gbps, 5 GHz</li>
+                    <li>802.11ax (Wi-Fi 6): hasta 9.6 Gbps, eficiencia mejorada</li>
+                    <li>802.11be (Wi-Fi 7): próxima generación, ultra alta velocidad</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 5: Protocolos y Estándares Parte 2 -->
+        <div class="slide" data-slide="5">
+            <h2>5.2 Protocolos y Estándares - IETF e ISO</h2>
+            
+            <div class="card">
+                <h4>🌐 IETF - Protocolos de Internet</h4>
+                <p><strong>TCP/IP:</strong> Suite de protocolos fundamental de Internet</p>
+                <ul>
+                    <li>IP: Direccionamiento y enrutamiento de paquetes</li>
+                    <li>TCP: Transmisión confiable orientada a conexión</li>
+                    <li>UDP: Transmisión rápida sin garantías</li>
+                    <li>HTTP/HTTPS: Transferencia de hipertexto segura</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h4>📋 ISO - Estándares Internacionales</h4>
+                <p><strong>ISO/IEC 7498:</strong> Modelo de referencia OSI</p>
+                <p><strong>Aplicación práctica:</strong></p>
+                <ul>
+                    <li>Diseño de arquitecturas de red interoperables</li>
+                    <li>Certificación de productos de telecomunicaciones</li>
+                    <li>Base para desarrollo de nuevos protocolos</li>
+                    <li>Educación y formación en redes</li>
+                </ul>
+            </div>
+
+            <div class="highlight-box">
+                <strong>Convergencia de estándares:</strong> La combinación de estándares IEEE, IETF e ISO permite la creación de redes globales interoperables y escalables.
+            </div>
+        </div>
+
+        <!-- Slide 6: Dispositivos de Red Parte 1 -->
+        <div class="slide" data-slide="6">
+            <h2>5.3 Características Funcionales de Dispositivos</h2>
+            
+            <div class="device-diagram">
+                <div class="device-icon">
+                    <div class="device-icon-text">🔀</div>
+                    <div class="device-name">Switch</div>
+                    <div class="device-layer">Capa 2</div>
+                </div>
+                <div class="device-icon">
+                    <div class="device-icon-text">🌐</div>
+                    <div class="device-name">Router</div>
+                    <div class="device-layer">Capa 3</div>
+                </div>
+                <div class="device-icon">
+                    <div class="device-icon-text">🌉</div>
+                    <div class="device-name">Bridge</div>
+                    <div class="device-layer">Capa 2</div>
+                </div>
+                <div class="device-icon">
+                    <div class="device-icon-text">📡</div>
+                    <div class="device-name">Access Point</div>
+                    <div class="device-layer">Capa 1-2</div>
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <div class="card">
+                    <h4>🔀 Switch (Conmutador)</h4>
+                    <p><strong>Función:</strong> Conmuta tramas entre dispositivos en la misma red</p>
+                    <p><strong>Capa OSI:</strong> Capa 2 (Enlace de Datos)</p>
+                    <p><strong>Ejemplo de uso:</strong> Conectar computadoras en una oficina, creando una LAN eficiente</p>
+                    <p><strong>Características:</strong> Aprende direcciones MAC, reduce colisiones, full-duplex</p>
+                </div>
+
+                <div class="card">
+                    <h4>🌐 Router (Enrutador)</h4>
+                    <p><strong>Función:</strong> Enruta paquetes entre diferentes redes</p>
+                    <p><strong>Capa OSI:</strong> Capa 3 (Red)</p>
+                    <p><strong>Ejemplo de uso:</strong> Conectar la red local a Internet, interconectar sucursales</p>
+                    <p><strong>Características:</strong> Tablas de enrutamiento, NAT, firewall integrado</p>
+                </div>
+
+                <div class="card">
+                    <h4>🌉 Puente (Bridge)</h4>
+                    <p><strong>Función:</strong> Conecta segmentos de red filtrando tráfico</p>
+                    <p><strong>Capa OSI:</strong> Capa 2 (Enlace de Datos)</p>
+                    <p><strong>Ejemplo de uso:</strong> Segmentar redes grandes, conectar diferentes tecnologías LAN</p>
+                    <p><strong>Características:</strong> Reduce dominios de colisión, aprende direcciones</p>
+                </div>
+
+                <div class="card">
+                    <h4>📡 Access Point (AP)</h4>
+                    <p><strong>Función:</strong> Proporciona acceso inalámbrico a la red</p>
+                    <p><strong>Capa OSI:</strong> Capa 1 y 2 (Física y Enlace)</p>
+                    <p><strong>Ejemplo de uso:</strong> Cobertura Wi-Fi en edificios, zonas públicas</p>
+                    <p><strong>Características:</strong> Múltiples SSIDs, seguridad WPA3, roaming</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Dispositivos de Red Parte 2 -->
+        <div class="slide" data-slide="7">
+            <h2>5.3 Dispositivos de Acceso y Transmisión</h2>
+            
+            <div class="card">
+                <h4>📞 Módem (Modulador-Demodulador)</h4>
+                <p><strong>Función:</strong> Convierte señales digitales en analógicas y viceversa</p>
+                <p><strong>Capa OSI:</strong> Capa 1 (Física)</p>
+                <p><strong>Ejemplos de uso:</strong></p>
+                <ul>
+                    <li><strong>Módem DSL:</strong> Internet de alta velocidad sobre líneas telefónicas</li>
+                    <li><strong>Módem de cable:</strong> Internet a través de cable coaxial (DOCSIS)</li>
+                    <li><strong>Módem de fibra óptica:</strong> Conversión óptica-eléctrica para FTTH</li>
+                    <li><strong>Módem celular:</strong> Conectividad 4G/5G para dispositivos móviles</li>
+                </ul>
+            </div>
+
+            <div class="highlight-box">
+                <strong>Tendencias actuales:</strong> Los dispositivos modernos integran múltiples funciones (router + módem + AP + switch), creando soluciones todo-en-uno para hogares y pequeñas empresas. Los equipos empresariales mantienen funciones separadas para mayor control y escalabilidad.
+            </div>
+
+            <div class="card">
+                <h4>🔄 Comparación de Operación</h4>
+                <p><strong>Hub vs Switch:</strong> El hub transmite a todos (half-duplex), el switch envía solo al destino (full-duplex)</p>
+                <p><strong>Switch vs Router:</strong> El switch conecta dispositivos en una red, el router conecta redes entre sí</p>
+            </div>
+        </div>
+
+        <!-- Slide 8: Estándares de Interfaces -->
+        <div class="slide" data-slide="8">
+            <h2>5.4 Estándares de Interfaces</h2>
+            
+            <div class="grid-2">
+                <div class="card">
+                    <h4>🔌 Ethernet (IEEE 802.3)</h4>
+                    <p><strong>Tipo:</strong> Interfaz cableada</p>
+                    <p><strong>Características:</strong></p>
+                    <ul>
+                        <li>Conector RJ-45 de 8 pines</li>
+                        <li>Cable de par trenzado (UTP/STP)</li>
+                        <li>Distancia máxima: 100 metros</li>
+                    </ul>
+                    <p><strong>Escenario típico:</strong> Conexiones LAN en oficinas, centros de datos</p>
+                </div>
+
+                <div class="card">
+                    <h4>🔗 USB (Universal Serial Bus)</h4>
+                    <p><strong>Tipo:</strong> Interfaz de datos serial</p>
+                    <p><strong>Características:</strong></p>
+                    <ul>
+                        <li>USB 2.0: 480 Mbps</li>
+                        <li>USB 3.2: hasta 20 Gbps</li>
+                        <li>USB 4.0: hasta 40 Gbps</li>
+                    </ul>
+                    <p><strong>Escenario típico:</strong> Módems USB, dispositivos periféricos, almacenamiento</p>
+                </div>
+
+                <div class="card">
+                    <h4>📡 RS-232</h4>
+                    <p><strong>Tipo:</strong> Interfaz serial legacy</p>
+                    <p><strong>Características:</strong></p>
+                    <ul>
+                        <li>Comunicación punto a punto</li>
+                        <li>Velocidad: hasta 115.2 kbps</li>
+                        <li>Conectores DB-9, DB-25</li>
+                    </ul>
+                    <p><strong>Escenario típico:</strong> Equipos industriales, routers (consola), sistemas heredados</p>
+                </div>
+
+                <div class="card">
+                    <h4>💡 Fibra Óptica</h4>
+                    <p><strong>Tipo:</strong> Transmisión por luz</p>
+                    <p><strong>Características:</strong></p>
+                    <ul>
+                        <li>Monomodo: largas distancias (100+ km)</li>
+                        <li>Multimodo: distancias cortas (2 km)</li>
+                        <li>Inmune a interferencias electromagnéticas</li>
+                    </ul>
+                    <p><strong>Escenario típico:</strong> Enlaces troncales, backbones, centros de datos</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 9: Detección y Corrección de Errores -->
+        <div class="slide" data-slide="9">
+            <h2>5.5 Detección y Corrección de Errores</h2>
+            
+            <div class="error-detection-diagram">
+                <div class="method-box">
+                    <div class="method-icon">✅</div>
+                    <div class="method-name">Paridad</div>
+                    <div class="method-power">Detección simple</div>
+                </div>
+                <div class="method-box">
+                    <div class="method-icon">🔍</div>
+                    <div class="method-name">Checksum</div>
+                    <div class="method-power">Rápido y eficiente</div>
+                </div>
+                <div class="method-box">
+                    <div class="method-icon">🔐</div>
+                    <div class="method-name">CRC</div>
+                    <div class="method-power">Alta confiabilidad</div>
+                </div>
+                <div class="method-box">
+                    <div class="method-icon">🛡️</div>
+                    <div class="method-name">Hamming</div>
+                    <div class="method-power">Corrección activa</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h4>✅ Paridad (Parity Check)</h4>
+                <p><strong>Descripción:</strong> Bit adicional para detectar errores en un byte</p>
+                <p><strong>Cuándo se usa:</strong> Memorias RAM (ECC), comunicaciones seriales simples</p>
+                <p><strong>Ejemplo:</strong> Paridad par: 1011010<strong>1</strong> (5 unos = par)</p>
+                <p><strong>Limitación:</strong> Solo detecta errores impares de bits</p>
+            </div>
+
+            <div class="grid-2">
+                <div class="card">
+                    <h4>🔍 Checksum</h4>
+                    <p><strong>Descripción:</strong> Suma de verificación de todos los bytes de datos</p>
+                    <p><strong>Cuándo se usa:</strong> TCP, UDP, IP, detección de corrupción en archivos</p>
+                    <p><strong>Ventaja:</strong> Simple y rápido de calcular</p>
+                </div>
+
+                <div class="card">
+                    <h4>🔐 CRC</h4>
+                    <p><strong>Descripción:</strong> Código basado en división polinomial</p>
+                    <p><strong>Cuándo se usa:</strong> Ethernet, Wi-Fi, USB, almacenamiento</p>
+                    <p><strong>Ventaja:</strong> Detecta el 99.9999997% de errores</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 10: Referencias -->
+        <div class="slide" data-slide="10">
+            <h2>7. Referencias y Fuentes</h2>
+            
+            <div class="highlight-box">
+                <h3>📚 Libros de Referencia</h3>
+                <div class="reference">
+                    <p>Tanenbaum, A. S., & Wetherall, D. J. (2011). <em>Computer Networks</em> (5th ed.). Prentice Hall.</p>
+                    <p>Kurose, J. F., & Ross, K. W. (2017). <em>Computer Networking: A Top-Down Approach</em> (7th ed.). Pearson.</p>
+                    <p>Stallings, W. (2013). <em>Data and Computer Communications</em> (10th ed.). Pearson.</p>
+                    <p>Forouzan, B. A. (2012). <em>Data Communications and Networking</em> (5th ed.). McGraw-Hill.</p>
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <h3>🌐 Estándares y Documentación Oficial</h3>
+                <div class="reference">
+                    <p>IEEE Standards Association. (2020). IEEE 802.3-2018 - Ethernet Standard.</p>
+                    <p>IEEE Standards Association. (2021). IEEE 802.11ax-2021 - Wi-Fi 6 Standard.</p>
+                    <p>IETF. (1981). RFC 791 - Internet Protocol. <em>https://www.ietf.org/rfc/rfc791.txt</em></p>
+                    <p>IETF. (1981). RFC 793 - Transmission Control Protocol. <em>https://www.ietf.org/rfc/rfc793.txt</em></p>
+                    <p>ISO/IEC. (1994). ISO/IEC 7498-1:1994 - OSI Basic Reference Model.</p>
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <h3>📄 Artículos y Recursos Académicos</h3>
+                <div class="reference">
+                    <p>Peterson, L. L., & Davie, B. S. (2021). <em>Computer Networks: A Systems Approach</em>. Morgan Kaufmann.</p>
+                    <p>Cisco Networking Academy. (2023). <em>CCNA Curriculum</em>. Cisco Systems.</p>
+                </div>
+            </div>
+
+            <p style="margin-top: 40px; text-align: center; color: #60a5fa; font-size: 1.3em;">
+                ¡Gracias por su atención! 🎓
+            </p>
+        </div>
+    </div>
+
+    <div class="navigation">
+        <button class="nav-btn" onclick="previousSlide()">← Anterior</button>
+        <button class="nav-btn" onclick="nextSlide()">Siguiente →</button>
+    </div>
+
+    <script>
+        let currentSlide = 1;
+        const totalSlides = document.querySelectorAll('.slide').length;
+
+        function showSlide(n) {
+            const slides = document.querySelectorAll('.slide');
+            if (n > totalSlides) currentSlide = 1;
+            if (n < 1) currentSlide = totalSlides;
+            
+            slides.forEach(slide => slide.classList.remove('active'));
+            slides[currentSlide - 1].classList.add('active');
+            
+            document.getElementById('slideCounter').textContent = `${currentSlide} / ${totalSlides}`;
+        }
+
+        function nextSlide() {
+            currentSlide++;
+            if (currentSlide > totalSlides) currentSlide = 1;
+            showSlide(currentSlide);
+        }
+
+        function previousSlide() {
+            currentSlide--;
+            if (currentSlide < 1) currentSlide = totalSlides;
+            showSlide(currentSlide);
+        }
+
+        // Navegación con teclado
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                previousSlide();
+            }
+        });
+
+        // Inicializar
+        showSlide(currentSlide);
+    </script>
+</body>
+</html>
